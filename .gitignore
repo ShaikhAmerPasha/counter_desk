@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+# dev-only fixtures: demo company, dev logins, dev PIN, fake ZATCA data
+counter_desk/tests/demo_data.py
+counter_desk/tests/zatca_probe.py

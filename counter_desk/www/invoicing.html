@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Invoicing</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
+<link rel="stylesheet" href="/assets/counter_desk/css/counter.css?v={{ asset_v }}">
+</head>
+<body>
+<div id="boot" style="padding:40px;font:14px system-ui">Loading…</div>
+<div id="app" hidden></div>
+<div id="dd"></div>
+<div class="ov" id="ov"></div>
+<div id="toast" role="status"></div>
+<script>window.CD={csrf:"{{ csrf_token }}"};</script>
+<script src="/assets/counter_desk/js/core.js?v={{ asset_v }}"></script>
+</body>
+</html>

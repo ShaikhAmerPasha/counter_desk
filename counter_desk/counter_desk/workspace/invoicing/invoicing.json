@@ -1,0 +1,71 @@
+{
+ "charts": [],
+ "content": "[{\"id\": \"hd\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Invoicing</b></span>\", \"col\": 12}}, {\"id\": \"sc0\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Sales Invoice\", \"col\": 3}}, {\"id\": \"sc1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Payment Entry\", \"col\": 3}}, {\"id\": \"sc2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Item\", \"col\": 3}}, {\"id\": \"sc3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Customer\", \"col\": 3}}]",
+ "creation": "2026-10-29 08:19:02.528380",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "icon": "file-text",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Invoicing",
+ "links": [],
+ "modified": "2026-10-29 08:19:08.835855",
+ "modified_by": "Administrator",
+ "module": "Counter Desk",
+ "name": "Invoicing",
+ "number_cards": [],
+ "owner": "Administrator",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "Invoicing User"
+  },
+  {
+   "role": "Invoicing Manager"
+  }
+ ],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "color": "green",
+   "doc_view": "List",
+   "format": "{} unpaid",
+   "label": "Sales Invoice",
+   "link_to": "Sales Invoice",
+   "stats_filter": "{\"docstatus\": 1, \"status\": [\"in\", [\"Unpaid\", \"Partly Paid\", \"Overdue\"]]}",
+   "type": "DocType"
+  },
+  {
+   "color": "blue",
+   "doc_view": "List",
+   "format": "{} drafts",
+   "label": "Payment Entry",
+   "link_to": "Payment Entry",
+   "stats_filter": "{\"docstatus\": 0}",
+   "type": "DocType"
+  },
+  {
+   "color": "orange",
+   "doc_view": "List",
+   "format": "",
+   "label": "Item",
+   "link_to": "Item",
+   "stats_filter": "",
+   "type": "DocType"
+  },
+  {
+   "color": "purple",
+   "doc_view": "List",
+   "format": "",
+   "label": "Customer",
+   "link_to": "Customer",
+   "stats_filter": "",
+   "type": "DocType"
+  }
+ ],
+ "title": "Invoicing"
+}

@@ -1,0 +1,33 @@
+{
+ "actions": [],
+ "creation": "2026-10-29 09:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": ["company", "default_warehouse", "default_customer", "default_price_list", "default_tax_template", "column_break_1", "update_stock_by_default", "disable_rounded_total", "default_letter_head", "default_print_format", "section_security", "manager_pin"],
+ "fields": [
+  {"fieldname": "company", "fieldtype": "Link", "in_list_view": 1, "label": "Company", "options": "Company", "reqd": 1},
+  {"fieldname": "default_warehouse", "fieldtype": "Link", "label": "Default Warehouse", "options": "Warehouse"},
+  {"fieldname": "default_customer", "fieldtype": "Link", "label": "Walk-in Customer", "options": "Customer", "description": "Used when the cashier does not pick a customer."},
+  {"fieldname": "default_price_list", "fieldtype": "Link", "label": "Default Price List", "options": "Price List"},
+  {"fieldname": "default_tax_template", "fieldtype": "Link", "label": "Default Tax Template", "options": "Sales Taxes and Charges Template"},
+  {"fieldname": "column_break_1", "fieldtype": "Column Break"},
+  {"default": "1", "fieldname": "update_stock_by_default", "fieldtype": "Check", "label": "Update Stock on New Invoices"},
+  {"default": "1", "fieldname": "disable_rounded_total", "fieldtype": "Check", "label": "Disable Rounded Total", "description": "Keep on for ZATCA: the invoice total must equal the sum of lines and VAT."},
+  {"fieldname": "default_letter_head", "fieldtype": "Link", "label": "Default Letter Head", "options": "Letter Head"},
+  {"fieldname": "default_print_format", "fieldtype": "Link", "label": "Default Sales Invoice Print Format", "options": "Print Format"},
+  {"fieldname": "section_security", "fieldtype": "Section Break", "label": "Approvals"},
+  {"fieldname": "manager_pin", "fieldtype": "Password", "label": "Manager PIN", "description": "Needed by counter users to cancel an invoice or payment, or to issue a return."}
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-10-29 09:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Counter Desk",
+ "name": "Counter Desk Settings",
+ "owner": "Administrator",
+ "permissions": [{"create": 1, "delete": 1, "email": 1, "print": 1, "read": 1, "role": "System Manager", "share": 1, "write": 1}],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
