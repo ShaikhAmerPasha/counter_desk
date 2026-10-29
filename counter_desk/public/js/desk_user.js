@@ -4,7 +4,7 @@
 	const KEEP = ["Administrator", "System Manager", "Accounts Manager", "Accounts User", "Sales Manager", "Stock Manager", "Stock User"];
 	const ALLOW = {
 		"Sales Invoice": {
-			fields: ["customer", "customer_name", "tax_id", "posting_date", "due_date", "is_return", "return_against", "update_stock", "set_warehouse", "items", "taxes_and_charges", "taxes",
+			fields: ["customer", "customer_name", "tax_id", "posting_date", "due_date", "cost_center", "is_return", "return_against", "update_stock", "set_warehouse", "items", "taxes_and_charges", "taxes",
 				"additional_discount_percentage", "discount_amount", "apply_discount_on", "total_qty", "total", "net_total", "total_taxes_and_charges", "grand_total", "rounded_total", "in_words", "outstanding_amount",
 				"remarks", "payment_terms_template", "custom_zatca_status", "amended_from"],
 			tables: { items: ["item_code", "item_name", "qty", "uom", "rate", "discount_percentage", "amount", "description"], taxes: ["charge_type", "account_head", "description", "rate", "tax_amount", "total"] },
@@ -80,6 +80,7 @@
 		if (!invoicing || !cfg) return;
 		defaults(frm);
 		dropButtons(frm);
+		if (frm.doctype === "Sales Invoice") setTimeout(() => { const sec = frm.fields_dict.accounting_dimensions_section; if (sec && sec.collapse) sec.collapse(false); frm.set_df_property("project", "hidden", 1); }, 400); // keeps Cost Center in view
 		if (frm.doctype === "Sales Invoice" && frm.meta) frm.meta.default_print_format = "Counter Desk Tax Invoice"; // Print opens the ZATCA-style invoice
 		frm.meta.fields.forEach((df) => {
 			if (df.fieldname === "company" && frm.doc.company) return frm.set_df_property("company", "hidden", 1); // single-company shop

@@ -131,11 +131,7 @@ def lock_to_invoicing(user):
     u.set("block_modules", [{"module": m} for m in frappe.get_all("Module Def", pluck="name") if m != "Counter Desk"])
     u.default_workspace = WORKSPACE
     u.save(ignore_permissions=True)
-    # new documents open with the shop's company, warehouse and walk-in customer already filled in
-    cfg = frappe.get_cached_doc("Counter Desk Settings")
-    for key, value in (("company", cfg.company), ("Company", cfg.company), ("Warehouse", cfg.default_warehouse), ("Customer", cfg.default_customer)):
-        if value:
-            frappe.defaults.set_user_default(key, value, user)
+    apply_user_defaults(user)
 
 
 PRINT_FORMAT = "Counter Desk Tax Invoice"
@@ -154,3 +150,13 @@ def ensure_print_format():
     if not settings.default_print_format:
         settings.default_print_format = PRINT_FORMAT
         settings.save(ignore_permissions=True)
+
+
+def apply_user_defaults(user):
+    """New documents open with the shop's company, warehouse, cost center and walk-in customer already filled in. Only missing values are written."""
+    cfg = frappe.get_cached_doc("Counter Desk Settings")
+    cost_center = frappe.get_cached_value("Company", cfg.company, "cost_center") if cfg.company else None
+    have = {r.defkey for r in frappe.get_all("DefaultValue", filters={"parent": user}, fields=["defkey"])}
+    for key, value in (("company", cfg.company), ("Warehouse", cfg.default_warehouse), ("Customer", cfg.default_customer), ("Cost Center", cost_center)):
+        if value and key not in have:
+            frappe.defaults.set_user_default(key, value, user)

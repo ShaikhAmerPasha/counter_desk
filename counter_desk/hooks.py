@@ -9,7 +9,7 @@ required_apps = ["erpnext"]
 
 # Invoicing users work in the normal ERPNext desk, restricted to one workspace, with a light skin
 app_include_css = "/assets/counter_desk/css/desk_skin.css?v=5"
-app_include_js = "/assets/counter_desk/js/desk_user.js?v=11"
+app_include_js = "/assets/counter_desk/js/desk_user.js?v=15"
 on_session_creation = "counter_desk.setup.session.on_session_creation"
 
 after_install = "counter_desk.setup.install.after_install"
