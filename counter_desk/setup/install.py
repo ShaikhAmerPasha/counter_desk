@@ -33,12 +33,14 @@ def after_install():
     ensure_permissions()
     ensure_settings()
     ensure_workspace()
+    ensure_print_format()
 
 
 def after_migrate():
     ensure_roles()
     ensure_permissions()
     ensure_workspace()
+    ensure_print_format()
 
 
 def ensure_roles():
@@ -134,3 +136,21 @@ def lock_to_invoicing(user):
     for key, value in (("company", cfg.company), ("Company", cfg.company), ("Warehouse", cfg.default_warehouse), ("Customer", cfg.default_customer)):
         if value:
             frappe.defaults.set_user_default(key, value, user)
+
+
+PRINT_FORMAT = "Counter Desk Tax Invoice"
+
+
+def ensure_print_format():
+    """ZATCA-style bilingual tax invoice with a QR block. Rewritten on every migrate so the template file stays the source of truth."""
+    import os
+
+    html = open(os.path.join(os.path.dirname(__file__), "..", "templates", "print", "tax_invoice.html"), encoding="utf-8").read()
+    doc = frappe.get_doc("Print Format", PRINT_FORMAT) if frappe.db.exists("Print Format", PRINT_FORMAT) else frappe.new_doc("Print Format")
+    doc.update({"name": PRINT_FORMAT, "doc_type": "Sales Invoice", "module": "Counter Desk", "standard": "No", "custom_format": 1, "print_format_type": "Jinja", "html": html, "disabled": 0,
+                "margin_top": 10, "margin_bottom": 10, "margin_left": 10, "margin_right": 10, "align_labels_right": 0, "show_section_headings": 0, "line_breaks": 0})
+    doc.save(ignore_permissions=True) if doc.creation else doc.insert(ignore_permissions=True)
+    settings = frappe.get_single("Counter Desk Settings")
+    if not settings.default_print_format:
+        settings.default_print_format = PRINT_FORMAT
+        settings.save(ignore_permissions=True)

@@ -80,6 +80,7 @@
 		if (!invoicing || !cfg) return;
 		defaults(frm);
 		dropButtons(frm);
+		if (frm.doctype === "Sales Invoice" && frm.meta) frm.meta.default_print_format = "Counter Desk Tax Invoice"; // Print opens the ZATCA-style invoice
 		frm.meta.fields.forEach((df) => {
 			if (df.fieldname === "company" && frm.doc.company) return frm.set_df_property("company", "hidden", 1); // single-company shop
 			if (LAYOUT.includes(df.fieldtype) || cfg.fields.includes(df.fieldname)) return;

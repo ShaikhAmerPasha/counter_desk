@@ -1,0 +1,83 @@
+{%- set co = frappe.get_cached_doc("Company", doc.company) -%}
+{%- set cust = frappe.get_cached_doc("Customer", doc.customer) if doc.customer else frappe._dict() -%}
+{%- set qr = invoice_qr(doc) -%}
+{%- set b2b = doc.tax_id or cust.get("tax_id") -%}
+{%- set vat_rate = (doc.taxes[0].rate if doc.taxes else 0) or 0 -%}
+{%- macro money(v) -%}{{ "{:,.2f}".format(v or 0) }}{%- endmacro -%}
+<style>
+.zi{font-family:"Segoe UI",Tahoma,Arial,sans-serif;color:#111;font-size:11.5px;line-height:1.45}
+.zi table{width:100%;border-collapse:collapse}
+.zi .ar{direction:rtl;font-family:"Segoe UI",Tahoma,Arial,sans-serif}
+.zi .head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:3px solid #111;padding-bottom:12px}
+.zi .co b{font-size:18px;display:block}
+.zi .title{text-align:right}
+.zi .title b{font-size:19px;letter-spacing:.03em;display:block}
+.zi .badge{display:inline-block;border:1.5px solid #111;border-radius:4px;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+.zi .meta{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid #bbb;margin-top:12px}
+.zi .meta div{padding:6px 8px;border-right:1px solid #ddd}
+.zi .meta div:last-child{border-right:0}
+.zi .k{display:block;font-size:9.5px;color:#666;text-transform:uppercase;letter-spacing:.05em}
+.zi .parties{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.zi .box{border:1px solid #bbb}
+.zi .box h4{margin:0;padding:5px 8px;background:#f1f1f1!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:11px;display:flex;justify-content:space-between}
+.zi .box div.bd{padding:7px 8px}
+.zi .items{margin-top:12px}
+.zi .items th{background:#111!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;padding:6px 6px;text-align:left}
+.zi .items th small,.zi .items td small{display:block;font-weight:400;opacity:.85}
+.zi .items td{padding:6px;border-bottom:1px solid #e3e3e3;vertical-align:top}
+.zi .r{text-align:right}
+.zi .foot{display:flex;justify-content:space-between;gap:20px;margin-top:14px;align-items:flex-start}
+.zi .qr{text-align:center;width:150px}
+.zi .qr img{width:140px;height:140px;image-rendering:pixelated;border:1px solid #ccc;padding:4px;background:#fff}
+.zi .qr .cap{font-size:9.5px;color:#555;margin-top:3px}
+.zi .sum{min-width:290px}
+.zi .sum div{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dotted #ccc}
+.zi .sum .g{border-top:2px solid #111;border-bottom:0;margin-top:3px;padding-top:6px;font-size:14px;font-weight:700}
+.zi .words{margin-top:10px;font-size:10.5px;color:#333}
+.zi .note{margin-top:14px;font-size:9.5px;color:#555;text-align:center;border-top:1px solid #ddd;padding-top:6px}
+</style>
+<div class="zi">
+ <div class="head">
+  <div class="co"><b>{{ co.company_name }}</b>
+   {% if co.get("custom__company_name_in_arabic__") %}<div class="ar">{{ co.get("custom__company_name_in_arabic__") }}</div>{% endif %}
+   {% if doc.company_address_display %}<div>{{ doc.company_address_display }}</div>{% endif %}
+   <div>VAT No. / الرقم الضريبي: <b style="display:inline;font-size:11.5px">{{ co.tax_id or "—" }}</b></div></div>
+  <div class="title"><b>{{ "TAX INVOICE" if b2b else "SIMPLIFIED TAX INVOICE" }}</b>
+   <div class="ar" style="font-size:15px;font-weight:700">{{ "فاتورة ضريبية" if b2b else "فاتورة ضريبية مبسطة" }}</div>
+   {% if doc.is_return %}<span class="badge">Credit Note · إشعار دائن</span>{% elif doc.docstatus == 0 %}<span class="badge">Draft · مسودة</span>{% elif doc.docstatus == 2 %}<span class="badge">Cancelled · ملغاة</span>{% endif %}</div>
+ </div>
+ <div class="meta">
+  <div><span class="k">Invoice No. / رقم الفاتورة</span><b>{{ doc.name }}</b></div>
+  <div><span class="k">Issue Date / تاريخ الإصدار</span>{{ doc.get_formatted("posting_date") }} {{ frappe.utils.get_time(doc.posting_time).strftime("%H:%M") if doc.posting_time else "" }}</div>
+  <div><span class="k">Due Date / تاريخ الاستحقاق</span>{{ doc.get_formatted("due_date") }}</div>
+  <div><span class="k">Currency / العملة</span>{{ doc.currency }}</div>
+ </div>
+ <div class="parties">
+  <div class="box"><h4><span>Seller</span><span class="ar">البائع</span></h4><div class="bd"><b>{{ co.company_name }}</b><br>VAT: {{ co.tax_id or "—" }}{% if doc.company_address_display %}<br>{{ doc.company_address_display }}{% endif %}</div></div>
+  <div class="box"><h4><span>Buyer</span><span class="ar">المشتري</span></h4><div class="bd"><b>{{ doc.customer_name or cust.get("customer_name") }}</b>{% if cust.get("custom_customer_name_arabic") %}<div class="ar">{{ cust.get("custom_customer_name_arabic") }}</div>{% endif %}{% if b2b %}<br>VAT: {{ b2b }}{% endif %}{% if doc.address_display %}<br>{{ doc.address_display }}{% endif %}</div></div>
+ </div>
+ <table class="items">
+  <thead><tr><th>#</th><th>Item / الصنف</th><th class="r">Qty<small>الكمية</small></th><th class="r">Unit Price<small>سعر الوحدة</small></th><th class="r">Taxable<small>الخاضع للضريبة</small></th><th class="r">VAT %<small>الضريبة</small></th><th class="r">VAT Amt<small>مبلغ الضريبة</small></th><th class="r">Total<small>الإجمالي</small></th></tr></thead>
+  <tbody>
+  {% for it in doc.items %}
+   {%- set net = it.net_amount if it.net_amount is not none else it.amount -%}
+   {%- set vat = net * vat_rate / 100 -%}
+   <tr><td>{{ loop.index }}</td><td>{{ it.item_name }}{% if it.description and it.description != it.item_name %}<small>{{ frappe.utils.strip_html(it.description)|truncate(90) }}</small>{% endif %}</td>
+    <td class="r">{{ it.qty|int if it.qty == it.qty|int else it.qty }} {{ it.uom }}</td><td class="r">{{ money(it.rate) }}</td><td class="r">{{ money(net) }}</td><td class="r">{{ vat_rate|round(2) }}%</td><td class="r">{{ money(vat) }}</td><td class="r">{{ money(net + vat) }}</td></tr>
+  {% endfor %}
+  </tbody>
+ </table>
+ <div class="foot">
+  <div class="qr"><img src="{{ qr.src }}" alt="ZATCA QR"><div class="cap">ZATCA QR · رمز الاستجابة السريعة{% if qr.source == "sample" %}<br><span style="opacity:.7">(sample)</span>{% endif %}</div></div>
+  <div class="sum">
+   <div><span>Total (excl. VAT) / الإجمالي دون الضريبة</span><span>{{ money(doc.net_total) }}</span></div>
+   {% if doc.discount_amount %}<div><span>Discount / الخصم</span><span>−{{ money(doc.discount_amount) }}</span></div>{% endif %}
+   <div><span>VAT {{ vat_rate|round(2) }}% / ضريبة القيمة المضافة</span><span>{{ money(doc.total_taxes_and_charges) }}</span></div>
+   <div class="g"><span>Total / الإجمالي</span><span>{{ doc.currency }} {{ money(doc.rounded_total or doc.grand_total) }}</span></div>
+   {% if doc.outstanding_amount is not none and doc.docstatus == 1 %}<div><span>Balance due / المتبقي</span><span>{{ money(doc.outstanding_amount) }}</span></div>{% endif %}
+  </div>
+ </div>
+ {% if doc.in_words %}<div class="words">{{ doc.in_words }}</div>{% endif %}
+ {% if doc.terms %}<div class="words">{{ doc.terms }}</div>{% endif %}
+ <div class="note">Thank you for your business · شكراً لتعاملكم معنا</div>
+</div>
